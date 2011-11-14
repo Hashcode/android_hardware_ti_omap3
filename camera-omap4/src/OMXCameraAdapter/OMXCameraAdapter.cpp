@@ -3411,7 +3411,14 @@ status_t OMXCameraAdapter::startPreview()
    ///Queue all the buffers on preview port
     for (int index = 0; index < mPreviewData->mNumBufs; index++)
         {
+#ifdef USE_MOTOROLA_CODE
+        mPreviewData->mBufferHeader[index]->nFlags |= OMX_BUFFERHEADERFLAG_MODIFIED;
+#endif
         CAMHAL_LOGDB("Queuing buffer on Preview port - 0x%x", (uint32_t)mPreviewData->mBufferHeader[index]->pBuffer);
+#ifdef USE_MOTOROLA_CODE
+        if(mPreviewData->mBufferHeader[index]->pBuffer!=NULL)
+            {
+#endif
         eError = OMX_FillThisBuffer(mCameraAdapterParameters.mHandleComp,
                     (OMX_BUFFERHEADERTYPE*)mPreviewData->mBufferHeader[index]);
         if(eError!=OMX_ErrorNone)
@@ -3419,6 +3426,9 @@ status_t OMXCameraAdapter::startPreview()
             CAMHAL_LOGEB("OMX_FillThisBuffer-0x%x", eError);
             }
         GOTO_EXIT_IF((eError!=OMX_ErrorNone), eError);
+#ifdef USE_MOTOROLA_CODE
+            }
+#endif
         }
 
     if (mMeasurementEnabled)
